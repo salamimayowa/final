@@ -1,63 +1,24 @@
-/* Toxic Comment Filter - Content Styles */
+/* Existing Styles... */
 
 .toxic-filter-blurred {
-  filter: blur(8px) !important;
+  filter: blur(12px) !important; /* Slightly more blur for security */
   user-select: none !important;
   pointer-events: none !important;
   transition: filter 0.3s ease !important;
-  position: relative !important;
 }
 
-.toxic-filter-blurred::after {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: rgba(239, 68, 68, 0.1) !important;
-  border-radius: 4px !important;
-  pointer-events: none !important;
+/* Tooltip Badge Style */
+.toxic-score-badge {
+  opacity: 0.3;
+  transition: opacity 0.3s;
+  pointer-events: auto !important; /* Allow hover */
+}
+
+.toxic-score-badge:hover {
+  opacity: 1;
 }
 
 .toxic-filter-revealed {
   outline: 2px dashed rgba(239, 68, 68, 0.5) !important;
   outline-offset: 2px !important;
-  border-radius: 4px !important;
-}
-
-.toxic-filter-reveal-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  padding: 6px 12px !important;
-  margin: 4px 0 !important;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 6px !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  cursor: pointer !important;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3) !important;
-  transition: all 0.2s ease !important;
-  z-index: 10000 !important;
-}
-
-.toxic-filter-reveal-btn:hover {
-  background: linear-gradient(135deg, #5558e3 0%, #7c3aed 100%) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
-}
-
-.toxic-filter-reveal-btn:active {
-  transform: translateY(0) !important;
-}
-
-/* Animation for newly filtered content */
-@keyframes toxic-filter-flash {
-  0% { background-color: rgba(239, 68, 68, 0.2); }
-  100% { background-color: transparent; }
-}
-
-.toxic-filter-blurred {
-  animation: toxic-filter-flash 0.5s ease-out !important;
 }

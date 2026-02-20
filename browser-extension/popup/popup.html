@@ -29,6 +29,21 @@
       </div>
     </div>
 
+    <div class="sensitivity-section" style="border: 1px solid #ff4757;">
+      <label>🔒 Parental Controls (Safe Mode)</label>
+      <div id="safeModeControls">
+         <button id="enableSafeModeBtn" class="btn btn-secondary" style="width:100%; font-size: 11px;">Enable Strict Mode</button>
+      </div>
+      <div id="safeModeActive" style="display:none; text-align: center;">
+         <p style="color:#4ade80; font-size:11px; margin-bottom:5px;">STRICT MODE ACTIVE</p>
+         <input type="password" id="safeModePass" placeholder="Enter Password" style="width:70%; padding:5px; border-radius:4px; border:none;">
+        <div style="display:flex; gap:6px; align-items:center; justify-content:center; margin-top:6px;">
+          <button id="disableSafeModeBtn" class="btn-primary" style="padding:5px 10px; border-radius:4px; border:none; cursor:pointer;">Unlock</button>
+          <button id="forgotPasswordBtn" class="btn btn-secondary" style="padding:5px 8px; border-radius:4px; border:none; cursor:pointer; font-size:11px;">Forgot Password / Reset</button>
+        </div>
+      </div>
+    </div>
+
     <div class="toggle-section">
       <label class="toggle-label">
         <span>Enable Filtering</span>
@@ -37,6 +52,12 @@
           <span class="toggle-slider"></span>
         </div>
       </label>
+    </div>
+
+    <div class="sensitivity-section">
+      <label>Custom Blacklist (Comma separated)</label>
+      <textarea id="blacklistInput" placeholder="hate, violence, etc" style="width:100%; background: #1a1a2e; color: white; border: 1px solid #3a3a5c; border-radius: 4px; font-size: 11px; height: 40px;"></textarea>
+      <button id="saveKeywords" class="btn btn-secondary" style="width:100%; margin-top:5px; font-size: 11px;">Save Keywords</button>
     </div>
 
     <div class="sensitivity-section">
@@ -62,18 +83,20 @@
       </div>
     </div>
 
-    <div class="actions-section">
-      <button id="scanBtn" class="btn btn-primary">Scan Page Now</button>
-      <button id="revealBtn" class="btn btn-secondary">Reveal All</button>
-    </div>
-
+  <div class="actions-section" id="standardActions">
+    <button id="scanBtn" class="btn btn-primary">Scan Page Now</button>
+    <button id="revealBtn" class="btn btn-secondary">Reveal All</button>
+    <button id="blurAllBtn" class="btn" style="background: #2f3542; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold;">
+    🛡️ Re-hide Toxic Content
+    </button>
+  </div>
+  
     <div class="export-section">
       <h3>Export History</h3>
       <div class="export-buttons">
         <button id="exportJsonBtn" class="btn btn-export">📄 JSON</button>
         <button id="exportCsvBtn" class="btn btn-export">📊 CSV</button>
       </div>
-      <p class="export-note">Export all filtered comments from this session</p>
     </div>
 
     <footer>

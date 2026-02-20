@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Test Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --destructive: 0 84.2% 60.2%;
+            --primary: 221.2 83.2% 53.3%;
+            --border: 214.3 31.8% 91.4%;
+        }
+        body { background-color: white; color: #0f172a; font-family: sans-serif; }
+        .card { border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #fff; }
+        .text-muted-foreground { color: #64748b; }
+        .text-destructive { color: #ef4444; }
+        .border-destructive-20 { border-color: rgba(239, 68, 68, 0.2); }
+        .border-primary-20 { border-color: rgba(59, 130, 246, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="/" class="inline-flex items-center px-4 py-2 mb-4 text-sm font-medium transition-colors hover:bg-slate-100 rounded-md">
+                <i data-lucide="arrow-left" class="mr-2 h-4 w-4"></i>
+                Back to Home
+            </a>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="alert-triangle" class="h-8 w-8 text-destructive"></i>
+                <h1 class="text-3xl font-bold">Extension Test Page</h1>
+            </div>
+            
+            <p class="text-muted-foreground max-w-2xl">
+                This page contains sample toxic comments for testing the Toxic Comment Filter browser extension. 
+                If your extension is working correctly, these comments should be detected and filtered.
+            </p>
+        </div>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+            
+            <div>
+                <h2 class="text-xl font-semibold mb-4 text-destructive flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="h-5 w-5"></i>
+                    Toxic Comments (Should Be Filtered)
+                </h2>
+                <div class="space-y-4" id="toxic-comments-container">
+                    </div>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-semibold mb-4 text-blue-600 flex items-center gap-2">
+                    <span class="mr-1">✓</span> Safe Comments (Should NOT Be Filtered)
+                </h2>
+                <div class="space-y-4" id="safe-comments-container">
+                    </div>
+
+                <div class="card mt-8 bg-slate-50 border-none p-6">
+                    <h3 class="text-lg font-semibold mb-4">How to Test</h3>
+                    <div class="space-y-2 text-sm text-muted-foreground">
+                        <p>1. Make sure the extension is installed and enabled</p>
+                        <p>2. Click the extension icon and ensure it's turned ON</p>
+                        <p>3. Refresh this page</p>
+                        <p>4. Toxic comments on the left should be blurred/filtered</p>
+                        <p>5. Safe comments on the right should remain visible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toxicComments = [
+            { username: "angry_user123", comment: "You're such an idiot, nobody cares about your stupid opinion!", platform: "Social Media" },
+            { username: "troll_account", comment: "Go kill yourself, you worthless piece of garbage.", platform: "Forum" },
+            { username: "hater99", comment: "I hope you die in a fire. You're the worst person ever.", platform: "Comments Section" },
+            { username: "mean_person", comment: "You're so ugly and dumb. Everyone hates you.", platform: "Chat" },
+            { username: "bully_online", comment: "Shut the hell up you moron! Nobody asked for your crap.", platform: "Gaming" },
+            { username: "toxic_gamer", comment: "You suck at this game, uninstall and never play again loser!", platform: "Gaming" },
+            { username: "rude_commenter", comment: "What a pathetic excuse for a human being. Disgusting.", platform: "News Article" },
+            { username: "keyboard_warrior", comment: "I'll find you and make you regret ever posting this trash.", platform: "Social Media" }
+        ];
+
+        const safeComments = [
+            { username: "friendly_user", comment: "Great post! I really enjoyed reading your perspective on this topic.", platform: "Blog" },
+            { username: "helpful_person", comment: "Thanks for sharing this information, it was really helpful!", platform: "Forum" },
+            { username: "positive_vibes", comment: "Keep up the amazing work! You're doing great.", platform: "Social Media" }
+        ];
+
+        function createCard(item, isToxic) {
+            const borderClass = isToxic ? 'border-destructive-20' : 'border-primary-20';
+            return `
+                <div class="card ${borderClass} p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium">@${item.username}</span>
+                        <span class="text-xs text-muted-foreground">${item.platform}</span>
+                    </div>
+                    <p class="text-slate-900">${item.comment}</p>
+                </div>
+            `;
+        }
+
+        document.getElementById('toxic-comments-container').innerHTML = toxicComments.map(c => createCard(c, true)).join('');
+        document.getElementById('safe-comments-container').innerHTML = safeComments.map(c => createCard(c, false)).join('');
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,4 +1,19 @@
-// Offscreen document for running BERT model locally
+/*
+  offscreen.js - Offscreen worker document
+
+  Purpose:
+  - Load and run the local ML model (BERT/text-classification) away from the
+    service worker thread to avoid memory/time limits and to comply with
+    Manifest V3 best practices.
+  - Respond to analyze requests and report progress back to the background
+    service worker so the popup can display a progress bar.
+
+  Implementation notes:
+  - Uses the local `transformers.js` pipeline wrapper to load a quantized
+    model from the `models/` directory bundled in the extension.
+  - Sends `MODEL_PROGRESS` and `MODEL_READY` messages back to the background
+    script for UI updates.
+*/
 import { pipeline, env } from './transformers.js';
 
 // --- LOCAL CONFIGURATION ---
@@ -14,6 +29,10 @@ env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('offscreen/');
 let classifier = null;
 let isLoading = false;
 
+/**
+ * sendProgress - helper to forward model-loading progress to the background script
+ * so the popup can show live updates to the user.
+ */
 function sendProgress(stage, percent) {
   chrome.runtime.sendMessage({ 
     type: 'MODEL_PROGRESS', 
@@ -22,23 +41,27 @@ function sendProgress(stage, percent) {
   }).catch(() => {});
 }
 
+/**
+ * initModel - lazily initialize the text-classification pipeline. Uses a
+ * quantized WASM backend to reduce memory footprint on client machines.
+ * Progress updates are forwarded to the background script.
+ */
 async function initModel() {
-  // If already loading or loaded, don't start again
-  if (classifier || isLoading) return;
-  
+  if (classifier || isLoading) return; // Protect from concurrent inits
   isLoading = true;
   sendProgress('Starting AI Engine...', 10);
 
   try {
-    // FORCE WASM: Your PC's integrated graphics won't handle WebGPU well
+    // Prefer WASM backend with a quantized model to reduce memory use.
     classifier = await pipeline('text-classification', 'Xenova/toxic-bert', {
       device: 'wasm', 
-      dtype: 'q8', // <--- IMPORTANT: This uses a "Quantized" (compressed) model
-                   // It uses 4x less RAM than the standard version!
+      dtype: 'q8', // Quantized model: significantly smaller memory footprint
       progress_callback: (p) => {
         if (p.status === 'ready') sendProgress('Ready', 100);
       }
     });
+    // Notify background/popup that model is available
+    try { chrome.runtime.sendMessage({ type: 'MODEL_READY' }).catch(()=>{}); } catch(e){}
   } catch (e) {
     console.error(e);
     sendProgress('Memory Error - Restarting...', 0);
@@ -46,9 +69,13 @@ async function initModel() {
     isLoading = false;
   }
 }
-    
 
-// Keep your existing analyzeTexts function and message listener below
+
+/**
+ * analyzeTexts - run classification for an array of input strings.
+ * Returns a compact summary for each input: whether it was considered
+ * toxic, the maximum matching score, and the category labels.
+ */
 async function analyzeTexts(texts, sensitivity = 0.5) {
   if (!classifier) await initModel();
   const results = [];
@@ -73,6 +100,7 @@ async function analyzeTexts(texts, sensitivity = 0.5) {
   return results;
 }
 
+// Listen for offscreen-specific RPC-style messages from background service worker
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'OFFSCREEN_ANALYZE') {
     analyzeTexts(message.texts, message.sensitivity).then(results => sendResponse({ results }));
@@ -84,4 +112,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-initModel();
+// Note: model initialization is performed lazily on demand when receiving 'INIT_MODEL'
